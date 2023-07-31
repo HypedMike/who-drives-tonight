@@ -1,5 +1,5 @@
 <script>
-	let people_list = [];
+	let people_list = ['aldo', 'giovanni', 'giacomo'];
 	let new_person = '';
 	let number_of_people = 1;
 	let choosen_person = [];
@@ -19,20 +19,23 @@
 		number_of_people = 1;
 	};
 
-	const chooseThePerson = () => {
-		choosen_person = Array(number_of_people)
-		for (let i = 0; i < number_of_people; i++) {
-			const random_number = Math.floor(Math.random() * people_list.length);
-
-			if (
-				(people_list[random_number].toLowerCase() == 'michele' ||
-					people_list[random_number].toLowerCase() == 'mike') &&
-				people_list[random_number].toLowerCase() != 'miche'
-			) {
-				choosen_person[i] = people_list[Math.floor(Math.random() * people_list.length)];
-			} else {
-				choosen_person[i] = people_list[random_number];
+	const findInList = (list, elem) => {
+		for (let i = 0; i < list.length; i++) {
+			if(list[i] == elem){
+				return true;
 			}
+		};
+		return false;
+	}
+
+	const chooseThePerson = () => {
+		choosen_person = Array(number_of_people);
+		for (let i = 0; i < number_of_people; i++) {
+			var random_number = Math.floor(Math.random() * people_list.length);
+			while (findInList(choosen_person, people_list[random_number])) {
+				random_number = Math.floor(Math.random() * people_list.length);
+			}
+			choosen_person[i] = people_list[random_number];
 		}
 	};
 </script>
@@ -55,7 +58,15 @@
 		{/if}
 		<input bind:value={new_person} type="text" placeholder="name" on:keyup={addToList} />
 	</div>
-
+	<div>
+		<button
+			on:click={() => {
+				people_list = [];
+			}}
+		>
+			Clean
+		</button>
+	</div>
 	<div>
 		Pick <button on:click={addPersonToDrive}>{number_of_people}</button> to drive
 		<button on:click={chooseThePerson}>Pick!</button>
@@ -63,7 +74,7 @@
 	<div class="peopleview">
 		{#if choosen_person.length > 0}
 			{#each choosen_person as cs}
-				{cs}
+				{cs + ' '}
 			{/each}
 		{/if}
 	</div>
@@ -92,7 +103,7 @@
 		font-size: 30px;
 	}
 
-	.peopleview{
+	.peopleview {
 		margin: 10px;
 		text-align: center;
 		font-size: 50px;
