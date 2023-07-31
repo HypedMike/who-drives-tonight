@@ -1,13 +1,27 @@
 <script>
+	import { goto } from '$app/navigation';
+	import { page } from '$app/stores';
+
+	const urlParams = $page.url;
 	let people_list = ['aldo', 'giovanni', 'giacomo'];
+	let choosen_person = [];
+
+	if(urlParams.searchParams.has('people')){
+		people_list = urlParams.searchParams.get('people').split(" ")
+	}
+
+	if(urlParams.searchParams.has('choosen')){
+		choosen_person = urlParams.searchParams.get('choosen').split(" ")
+	}
+
 	let new_person = '';
 	let number_of_people = 1;
-	let choosen_person = [];
 
 	const addToList = () => {
 		if (new_person != '' && new_person != undefined && new_person[new_person.length - 1] == ' ') {
 			people_list = people_list.concat([new_person]);
 			new_person = '';
+			$page.url.searchParams.set('people', people_list.join("%20"));
 		}
 	};
 
@@ -21,12 +35,12 @@
 
 	const findInList = (list, elem) => {
 		for (let i = 0; i < list.length; i++) {
-			if(list[i] == elem){
+			if (list[i] == elem) {
 				return true;
 			}
-		};
+		}
 		return false;
-	}
+	};
 
 	const chooseThePerson = () => {
 		choosen_person = Array(number_of_people);
@@ -37,7 +51,14 @@
 			}
 			choosen_person[i] = people_list[random_number];
 		}
+		$page.url.searchParams.set('choosen', choosen_person);
 	};
+
+	const shareURL = () => {
+		const sharable = "http://" + $page.url.host + "?people=" + people_list.join("%20") + "&choosen=" + choosen_person.join("%20")
+		goto(sharable); 
+		navigator.clipboard.writeText(sharable);
+	}
 </script>
 
 <svelte:head>
@@ -59,17 +80,14 @@
 		<input bind:value={new_person} type="text" placeholder="name" on:keyup={addToList} />
 	</div>
 	<div>
-		<button
-			on:click={() => {
-				people_list = [];
-			}}
-		>
-			Clean
-		</button>
-	</div>
-	<div>
-		Pick <button on:click={addPersonToDrive}>{number_of_people}</button> to drive
-		<button on:click={chooseThePerson}>Pick!</button>
+		<div>
+			Click here to clean the list<button on:click={() => {people_list = [];}}>Clean</button>
+		</div>
+		<div>
+			How many you want to pick? <button on:click={addPersonToDrive}>{number_of_people}</button>
+		</div>
+		<div>Ready to pick?<button on:click={chooseThePerson}>Pick!</button></div>
+		<div><button on:click={shareURL}>Share</button></div>
 	</div>
 	<div class="peopleview">
 		{#if choosen_person.length > 0}
@@ -92,6 +110,7 @@
 		background-color: transparent;
 		margin-top: 20px;
 		border-radius: 20px;
+		margin-left: 20px;
 	}
 
 	button:hover {
@@ -107,6 +126,12 @@
 		margin: 10px;
 		text-align: center;
 		font-size: 50px;
+	}
+
+	input {
+		background-color: transparent;
+		border: solid black 1px;
+		padding: 5px;
 	}
 
 	@media only screen and (max-width: 800px) {
