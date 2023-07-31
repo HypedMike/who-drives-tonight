@@ -18,14 +18,13 @@
 </script>
 
 <div class="app">
-	<Header />
 
 	<main>
 		<slot />
 	</main>
 
 	<footer>
-		<p>visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to learn SvelteKit</p>
+		<p>Crafted with much ❤️ by <a href="http://www.hypedmike.github.io">Michele Saladino</a> with the help of Maddie</p>
 	</footer>
 </div>
 
